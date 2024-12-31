@@ -1,0 +1,417 @@
+openapi: "3.0.3"
+info:
+  title: "Anime and Manga API"
+  description: "A REST API for managing anime and manga"
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Anime:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+        episodes:
+          type: integer
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+        rating:
+          type: number
+          format: float
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnimeReview'
+    AnimeRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+        episodes:
+          type: integer
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+        rating:
+          type: number
+          format: float
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnimeReview'
+    Manga:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+        chapters:
+          type: integer
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+        rating:
+          type: number
+          format: float
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/MangaReview'
+    MangaRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        releaseDate:
+          type: string
+        chapters:
+          type: integer
+        genres:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genre'
+        rating:
+          type: number
+          format: float
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/MangaReview'
+    Genre:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    AnimeReview:
+      type: object
+      properties:
+        id:
+          type: string
+        animeId:
+          type: string
+        userEmail:
+          type: string
+        content:
+          type: string
+        rating:
+          type: number
+          format: float
+        date:
+          type: string
+    MangaReview:
+      type: object
+      properties:
+        id:
+          type: string
+        mangaId:
+          type: string
+        userEmail:
+          type: string
+        content:
+          type: string
+        rating:
+          type: number
+          format: float
+        date:
+      required:
+        - id
+        - mangaId
+        - userEmail
+        - content
+        - rating
+        - date
+    LoginCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    RegisterCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+paths:
+  /animes:
+    get:
+      summary: Get all animes
+      description: Retrieves a list of all animes
+      responses:
+        '200':
+          description: List of animes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Anime'
+    post:
+      summary: Create a new anime
+      description: Creates a new anime
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimeRequest'
+      responses:
+        '201':
+          description: Anime created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anime'
+        '401':
+          description: Unauthorized
+  /animes/{id}:
+    get:
+      summary: Get anime by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anime found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anime'
+        '404':
+          description: Anime not found
+    put:
+      summary: Update an anime
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimeRequest'
+      responses:
+        '200':
+          description: Anime updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anime'
+        '404':
+          description: Anime not found
+        '401':
+          description: Unauthorized
+    delete:
+      summary: Delete an anime
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Anime deleted successfully
+        '404':
+          description: Anime not found
+        '401':
+          description: Unauthorized
+
+  /mangas:
+    get:
+      summary: Get all mangas
+      description: Retrieves a list of all mangas
+      responses:
+        '200':
+          description: List of mangas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Manga'
+    post:
+      summary: Create a new manga
+      description: Creates a new manga
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MangaRequest'
+      responses:
+        '201':
+          description: Manga created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Manga'
+        '401':
+          description: Unauthorized
+  /mangas/{id}:
+    get:
+      summary: Get manga by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Manga found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Manga'
+        '404':
+          description: Manga not found
+    put:
+      summary: Update a manga
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MangaRequest'
+      responses:
+        '200':
+          description: Manga updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Manga'
+        '404':
+          description: Manga not found
+        '401':
+          description: Unauthorized
+    delete:
+      summary: Delete a manga
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Manga deleted successfully
+        '404':
+          description: Manga not found
+        '401':
+          description: Unauthorized
+
+  /login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginCredentials'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginCredentials'
+        '401':
+          description: Unauthorized
+
+  /register:
+    post:
+      summary: Register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterCredentials'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterCredentials'
+        '400':
+          description: Bad request
+
+  /protected:
+    get:
+      summary: Protected route
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Protected content
+        '401':
+          description: Unauthorized
